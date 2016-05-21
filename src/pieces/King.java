@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import main.Gameboard;
 
 import main.Player;
 
@@ -18,8 +19,9 @@ public class King extends Piece{
     }
 
     @Override
-    public boolean couldMove(Point from, Point to) {
-       return (Math.abs(to.x-from.x) <= 1 && Math.abs(to.y-from.y) <= 1);
+    public boolean couldMove(Point from, Point to, Gameboard board) {
+       return super.couldMove(from, to, board) 
+               && (Math.abs(to.x-from.x) <= 1 && Math.abs(to.y-from.y) <= 1);
     }
     
     

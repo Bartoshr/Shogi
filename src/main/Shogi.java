@@ -68,7 +68,7 @@ public class Shogi extends javax.swing.JFrame {
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
-                .addContainerGap(423, Short.MAX_VALUE)
+                .addContainerGap(517, Short.MAX_VALUE)
                 .addComponent(label, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(startButton)
@@ -157,26 +157,44 @@ public class Shogi extends javax.swing.JFrame {
 }
 class MyPanel extends JPanel
 {    
-    Piece current = null; // aktywna figura
+    Point current = null; 
+    Piece cpiece = null;
+    
     boolean graRozpoczeta = false;
     
-    Player player;
+    Player localPlayer;
+    Player netPlayer;
         
     Gameboard board;
     
     MyPanel()
     {
-        player = new Player();
         board = new Gameboard(20,0);
-        player.setPieces(board);
+        
+        localPlayer = new Player(false);
+        localPlayer.setPieces(board);
+        
+        netPlayer = new Player(true);
+        netPlayer.setPieces(board);
     }
         
+   
+    // Game Mechanics in mouseClicked
     void mouseClicked(int mouseX, int mouseY)
     {
-        Point p = board.sprawdzWspolrzedne(mouseX, mouseY);
-        if(p != null) {
-            board.selectField(p.x, p.y);
+        Point next = board.sprawdzWspolrzedne(mouseX, mouseY);   
+        if(next == null) return;
+           
+                      
+       if (board.couldMove(current, next)){ 
+                System.out.println("Moved from "+current+" to "+next);
+                board.movePiece(current, next);
+                board.clearSelecion();
+                return;
         }
+
+        board.selectField(next.x, next.y);
+        current = new Point(next.x, next.y);
     }
     
     void startButtonClicked(){
@@ -192,6 +210,10 @@ class MyPanel extends JPanel
 
     // sprawdza czy ktoś nie został nieoszlifowanym zwycięscą
     public void czyKoniecGry(Gameboard plansza){
+    }
+
+    private Piece Point(int x, int y) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     

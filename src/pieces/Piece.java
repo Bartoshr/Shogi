@@ -1,32 +1,41 @@
 package pieces;
 
+import java.awt.Color;
 import main.Player;
 
 import java.awt.Font;
 import java.awt.Graphics;
 import java.util.List;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import main.Gameboard;
-import org.w3c.dom.css.Rect;
 
 public abstract class Piece {
            
     boolean promoted;
     boolean promotable;
     
+    private static final Font f = new Font("Times New Roman", Font.BOLD, 35);
+    
     String normChar = ""; 
     String promChar = "";
     
     Player owner;
     
-    Piece(Player player){
+    private static final Color background = new Color(212, 195, 144);
+    
+    Piece(Player owner){
         promotable = true;
+        this.owner = owner;
     }
     
-    public boolean couldMove(Point from, Point to){
-        return false;
+    public boolean couldMove(Point from, Point to, Gameboard board){
+       if(owner.isUp) return false; // jeśli pionek jest nie twój
+       if(isFieldTaken(to.x, to.y, board)) return false;
+       if(to.y-from.y == 0 && to.x-from.x == 0) return false;
+       return true;
     }
     
     public List<Point> getPossibleMoves(int x, int y, Gameboard board){
@@ -34,21 +43,86 @@ public abstract class Piece {
             for(int i = 0; i<board.size; i++){
                 for(int j=0; j<board.size; j++){
                     Piece next = board.getField(i, j);
-                    if(couldMove(new Point(x,y), new Point(i,j))){
+                    if(couldMove(new Point(x,y), new Point(i,j),board)){
                         result.add(new Point(i, j));
                     }
                 }
             }            
             return result;
     }
-        
+    
+    protected boolean isFieldTaken(int x, int y, Gameboard board){
+       Piece piece = board.getField(x, y);
+       if(piece == null) return false;
+       return  (piece.owner == this.owner);
+    }
+            
     public void draw(Graphics g, Rectangle rect) {
-            Font f = new Font("Times New Roman", Font.BOLD, 35);
-            g.setFont(f);
-        if(!promoted) { 
-            g.drawString(normChar, rect.x+5, rect.y+30);
+        g.setFont(f);
+        
+        if(owner.isUp){
+            drawPoligonDown(g, rect);   
         } else {
-            g.drawString(promChar, rect.x+5, rect.y+30);
+            drawPoligonUp (g, rect);
         }
+        
+        if(!promoted) { 
+            g.drawString(normChar, rect.x+10, rect.y+35);
+        } else {
+            g.drawString(promChar, rect.x+10, rect.y+35);
+        }
+    }
+    
+    private void drawPoligonDown(Graphics g, Rectangle rect) {
+        
+        Color tmp = g.getColor();
+        g.setColor(background);
+        
+        int xPoly[] = {
+            rect.x+1,
+            rect.x+rect.width,
+            rect.x+(rect.width)-5,
+            rect.x+(rect.width/2),
+            rect.x+1+5
+        };
+        
+        int yPoly[] = {
+            rect.y+1,
+            rect.y+1,
+            rect.y+rect.height-10,
+            rect.y+rect.height-1,
+            rect.y+rect.height-10
+        };
+        
+        Polygon result = new Polygon(xPoly, yPoly, xPoly.length);
+        g.fillPolygon(result);
+        g.setColor(tmp);
+    }
+    
+     private void drawPoligonUp(Graphics g,Rectangle rect) {
+        
+        Color tmp = g.getColor();
+        g.setColor(background); 
+ 
+        
+        int xPoly[] = {
+            rect.x+1+5,
+            rect.x+rect.width/2,
+            rect.x+rect.width-5,
+            rect.x+(rect.width),
+            rect.x+1
+        };
+        
+        int yPoly[] = {
+            rect.y+1+10,
+            rect.y+1,
+            rect.y+1+10,
+            rect.y+rect.height,
+            rect.y+rect.height,
+        };
+        
+        Polygon result = new Polygon(xPoly, yPoly, xPoly.length);
+        g.fillPolygon(result);
+        g.setColor(tmp);
     }
 }

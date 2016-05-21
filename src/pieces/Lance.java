@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import main.Gameboard;
 
 import main.Player;
 
@@ -16,10 +17,27 @@ public class Lance extends Piece{
         normChar = "香";
         promChar = "杏";
     }
+    
+    private boolean obstacleDetect(Point from, Point to, Gameboard board){
+        Point tmp = new Point(to.x, to.y);
+        
+        while(!tmp.equals(from)){
+  
+            if (tmp.y < from.y) tmp.y++;
+            
+            Piece piece = board.getField(tmp.x, tmp.y);
+            if(piece != null && piece.owner == this.owner && piece != this) {
+                if(board.getField(tmp.x, tmp.y).owner == this.owner) return false;
+            }
+        }    
+        return true;
+    }
 
     @Override
-    public boolean couldMove(Point from, Point to) {
-        return (from.x-to.x == 0) && (from.y-to.y>0);
+    public boolean couldMove(Point from, Point to, Gameboard board) {
+        return super.couldMove(from, to, board) 
+                && (from.x-to.x == 0) && (from.y-to.y>0)
+                    && obstacleDetect(from, to, board);
     }
     
     

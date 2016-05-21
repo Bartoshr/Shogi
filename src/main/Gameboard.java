@@ -13,8 +13,8 @@ import java.util.ArrayList;
 
 public class Gameboard {
     
-    static int width = 40;
-    static int heigth = 40;
+    static int width = 50;
+    static int heigth = 50;
     public final static int size = 9;
     
     Color green = new Color(0,255,0);
@@ -71,6 +71,20 @@ public class Gameboard {
             }
         return null;
     }
+    
+    public boolean couldMove(Point current, Point next){
+        if(current == null || next == null) return false; // Just check
+        
+        Piece movedPiece = getField(current.x, current.y);
+        if(movedPiece == null) return false; //if there is no piece return false
+        if(movedPiece.couldMove(current, next, this)) return true; 
+        return false;
+    }
+    
+    public void movePiece(Point current, Point next){
+        pieces[next.x][next.y] = pieces[current.x][current.y];
+        pieces[current.x][current.y] = null;
+    }
        
     // ustawia konkretną wartość na polu o indeksach x,y
     public void setField(int x, int y, Piece wartosc) {
@@ -95,24 +109,28 @@ public class Gameboard {
         return pieces[selected.x][selected.y];
     }
     
+    public void clearSelecion(){
+        selected = null;
+    }
+    
     private void markField(Graphics g, Rectangle rect, Color color){
         g.setColor(color);
         g.fillRect(rect.x+1, rect.y+1, width-1, heigth-1);
         g.setColor(black);
     }
         
-    private void drawPath(Graphics g, int x, int y){
-       if(pieces[x][y] != null) {
-            for(int i = 0; i<size; i++){
-                for(int j=0; j<size; j++){
-                    if(pieces[x][y].couldMove(new Point(x,y), new Point(i,j))){
-                        Rectangle rect = fields[i][j];
-                        markField(g, rect, red);
-                    }
-                }
-            }
-        }
-    }
+//    private void drawPath(Graphics g, int x, int y){
+//       if(pieces[x][y] != null) {
+//            for(int i = 0; i<size; i++){
+//                for(int j=0; j<size; j++){
+//                    if(pieces[x][y].couldMove(new Point(x,y), new Point(i,j))){
+//                        Rectangle rect = fields[i][j];
+//                        markField(g, rect, red);
+//                    }
+//                }
+//            }
+//        }
+//    }
        
     void draw(Graphics g){
         
@@ -123,7 +141,9 @@ public class Gameboard {
                   g.drawRect(rect.x, rect.y, rect.height, rect.width);
                   
                   if(selected != null && selected.x == i && selected.y == j) {
+                         Rectangle rect2 = fields[Math.abs(i-8)][Math.abs(j-8)];
                          markField(g, rect, green);
+                         markField(g, rect2, green);
                   }
               }
           }

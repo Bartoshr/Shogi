@@ -24,25 +24,40 @@ import pieces.SilverGeneral;
  */
 public class Player {
     
-    public Player() {
+    public boolean isUp; // indicate direction of arrow (ownership)    
+    
+    public Player(boolean isUp) {
+        this.isUp = isUp;
     }
     
     void setPieces(Gameboard board){
-                for(int i = 0; i < 9; i++){
-            board.setField(i, 6, new Pawn(this));
-        }
-        board.setField(2,7, new Bishop(this));
-        board.setField(6,7, new Rook(this));
         
-        board.setField(0,8, new Lance(this));
-        board.setField(1,8, new Knight(this));
-        board.setField(2,8, new SilverGeneral(this));
-        board.setField(3,8, new GoldGeneral(this));
-        board.setField(4,8, new King(this));
-        board.setField(5,8, new GoldGeneral(this));
-        board.setField(6,8, new SilverGeneral(this));
-        board.setField(7,8, new Knight(this));
-        board.setField(8,8, new Lance(this));
+        int firstRow = 6;
+        int midRow = 7;
+        int lastRow = 8;
+        
+        if(isUp) {
+            firstRow = 2;
+            midRow = 1;
+            lastRow = 0;
+        }
+        
+        
+        for(int i = 0; i < 9; i++){
+            board.setField(i, firstRow, new Pawn(this));
+        }
+        board.setField(1,midRow, new Bishop(this));
+        board.setField(7,midRow, new Rook(this));
+        
+        board.setField(0,lastRow, new Lance(this));
+        board.setField(1,lastRow, new Knight(this));
+        board.setField(2,lastRow, new SilverGeneral(this));
+        board.setField(3,lastRow, new GoldGeneral(this));
+        board.setField(4,lastRow, new King(this));
+        board.setField(5,lastRow, new GoldGeneral(this));
+        board.setField(6,lastRow, new SilverGeneral(this));
+        board.setField(7,lastRow, new Knight(this));
+        board.setField(8,lastRow, new Lance(this));
     }
     
 }

@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import main.Gameboard;
 
 public class Pawn extends Piece{
 
@@ -17,8 +18,9 @@ public class Pawn extends Piece{
     }
 
     @Override
-    public boolean couldMove(Point from, Point to) {
-        return (to.x-from.x == 0) && (from.y-to.y == 1);
+    public boolean couldMove(Point from, Point to, Gameboard board) {
+        return super.couldMove(from, to, board) 
+                && (to.x-from.x == 0) && (from.y-to.y == 1);
     }
     
     
