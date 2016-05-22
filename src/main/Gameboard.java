@@ -21,7 +21,7 @@ public class Gameboard {
     Color red = new Color(255,0,0);
     Color black = new Color(0,0,0);
     
-    int x, y;
+    int x, y; // położenie lewego górnego rogu
     Piece[][] pieces= new Piece[9][9];
     Rectangle[][] fields=new Rectangle[9][9]; // tablica pól planszy
     Point selected;
@@ -49,18 +49,13 @@ public class Gameboard {
                 pieces[i][j]=null;
     }
             
-    // sprawdza czy okret nie koliduje z innymi okretami na planszy
-    // true -  koliduje, false - nie koliduje
-    public boolean czyKoliduje(Piece piece){
-        return true;
-    }
-    
 
+   
     
     // zwraca współrzędne pola jeśli kliknięcie miało miejsce w jego obrębie
     // zwraca null w przecinwym wypadku
     // uwaga wspołrzędne rozpatrywane względem planszy
-    public Point sprawdzWspolrzedne(int x, int y){
+    public Point checkCoordinates(int x, int y){
         for(int i=0; i<size; i++) {
               for(int j=0; j<size; j++) {  
                   Rectangle rect = fields[i][j];
@@ -81,9 +76,14 @@ public class Gameboard {
         return false;
     }
     
-    public void movePiece(Point current, Point next){
+    
+    // moves Piece from current position to next
+    // and return beaten if exist
+    public Piece movePiece(Point current, Point next){
+        Piece beaten = pieces[next.x][next.y];
         pieces[next.x][next.y] = pieces[current.x][current.y];
         pieces[current.x][current.y] = null;
+        return beaten;
     }
        
     // ustawia konkretną wartość na polu o indeksach x,y
@@ -118,19 +118,10 @@ public class Gameboard {
         g.fillRect(rect.x+1, rect.y+1, width-1, heigth-1);
         g.setColor(black);
     }
-        
-//    private void drawPath(Graphics g, int x, int y){
-//       if(pieces[x][y] != null) {
-//            for(int i = 0; i<size; i++){
-//                for(int j=0; j<size; j++){
-//                    if(pieces[x][y].couldMove(new Point(x,y), new Point(i,j))){
-//                        Rectangle rect = fields[i][j];
-//                        markField(g, rect, red);
-//                    }
-//                }
-//            }
-//        }
-//    }
+    
+    public static Point mirror(Point point){
+        return new Point(Math.abs(point.x-8), Math.abs(point.y-8));
+    }
        
     void draw(Graphics g){
         
@@ -138,8 +129,7 @@ public class Gameboard {
         for(int i=0; i<size; i++) {
               for(int j=0; j<size; j++) {  
                   Rectangle rect = fields[i][j];
-                  g.drawRect(rect.x, rect.y, rect.height, rect.width);
-                  
+                  g.drawRect(rect.x, rect.y, rect.height, rect.width);           
                   if(selected != null && selected.x == i && selected.y == j) {
                          Rectangle rect2 = fields[Math.abs(i-8)][Math.abs(j-8)];
                          markField(g, rect, green);

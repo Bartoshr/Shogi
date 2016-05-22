@@ -9,6 +9,7 @@ import pieces.King;
 import pieces.Knight;
 import pieces.Lance;
 import pieces.Pawn;
+import pieces.Piece;
 import pieces.Rook;
 import pieces.SilverGeneral;
 
@@ -25,6 +26,7 @@ import pieces.SilverGeneral;
 public class Player {
     
     public boolean isUp; // indicate direction of arrow (ownership)    
+    
     
     public Player(boolean isUp) {
         this.isUp = isUp;

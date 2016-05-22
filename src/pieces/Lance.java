@@ -26,8 +26,8 @@ public class Lance extends Piece{
             if (tmp.y < from.y) tmp.y++;
             
             Piece piece = board.getField(tmp.x, tmp.y);
-            if(piece != null && piece.owner == this.owner && piece != this) {
-                if(board.getField(tmp.x, tmp.y).owner == this.owner) return false;
+            if(piece != null  && piece != this) {
+               return false;
             }
         }    
         return true;

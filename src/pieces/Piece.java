@@ -17,7 +17,9 @@ public abstract class Piece {
     boolean promoted;
     boolean promotable;
     
-    private static final Font f = new Font("Times New Roman", Font.BOLD, 35);
+    private static final Font normalSignFont = new Font("Times New Roman", Font.BOLD, 35);
+    private static final Font smallSignFont = new Font("Times New Roman", Font.BOLD, 30);
+    private static final Font textFont = new Font("Times New Roman", Font.PLAIN, 15);
     
     String normChar = ""; 
     String promChar = "";
@@ -58,7 +60,7 @@ public abstract class Piece {
     }
             
     public void draw(Graphics g, Rectangle rect) {
-        g.setFont(f);
+        g.setFont(normalSignFont);
         
         if(owner.isUp){
             drawPoligonDown(g, rect);   
@@ -71,6 +73,15 @@ public abstract class Piece {
         } else {
             g.drawString(promChar, rect.x+10, rect.y+35);
         }
+    }
+    
+    
+    public void drawSign(Graphics g, Rectangle rect, int num) {
+        g.setFont(smallSignFont);       
+        g.drawString(normChar, rect.x+10, rect.y+35);
+        
+        g.setFont(textFont);
+        g.drawString(toString()+" "+Integer.toString(num), rect.x, rect.y+60);
     }
     
     private void drawPoligonDown(Graphics g, Rectangle rect) {
@@ -125,4 +136,11 @@ public abstract class Piece {
         g.fillPolygon(result);
         g.setColor(tmp);
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
+     
+     
 }

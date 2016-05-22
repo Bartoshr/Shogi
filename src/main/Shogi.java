@@ -59,19 +59,17 @@ public class Shogi extends javax.swing.JFrame {
             .addGroup(panelLayout.createSequentialGroup()
                 .addGap(224, 224, 224)
                 .addComponent(startButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
-                .addContainerGap(201, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 170, Short.MAX_VALUE)
                 .addComponent(label)
-                .addGap(199, 199, 199))
+                .addGap(109, 109, 109))
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
-                .addContainerGap(517, Short.MAX_VALUE)
-                .addComponent(label, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(startButton)
+                .addContainerGap(508, Short.MAX_VALUE)
+                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(startButton)
+                    .addComponent(label))
                 .addContainerGap())
         );
 
@@ -164,6 +162,9 @@ class MyPanel extends JPanel
     
     Player localPlayer;
     Player netPlayer;
+    
+    Purgatory localPurgatory;
+    Purgatory netPurgatory;
         
     Gameboard board;
     
@@ -171,9 +172,11 @@ class MyPanel extends JPanel
     {
         board = new Gameboard(20,0);
         
+        localPurgatory = new Purgatory(540, 6*50+20);
         localPlayer = new Player(false);
         localPlayer.setPieces(board);
         
+        netPurgatory = new Purgatory(540, 35);
         netPlayer = new Player(true);
         netPlayer.setPieces(board);
     }
@@ -182,14 +185,24 @@ class MyPanel extends JPanel
     // Game Mechanics in mouseClicked
     void mouseClicked(int mouseX, int mouseY)
     {
-        Point next = board.sprawdzWspolrzedne(mouseX, mouseY);   
+        localPurgatory.clearSelection();
+        board.clearSelecion();
+        
+        int purgitoryItem = localPurgatory.checkCoordinates(mouseX, mouseY);
+        if(purgitoryItem != -1) localPurgatory.selectItem(purgitoryItem);
+        
+        Point next = board.checkCoordinates(mouseX, mouseY);   
         if(next == null) return;
            
                       
        if (board.couldMove(current, next)){ 
                 System.out.println("Moved from "+current+" to "+next);
-                board.movePiece(current, next);
-                board.clearSelecion();
+                Piece beaten = board.movePiece(current, next);
+                if(beaten != null) {
+                    System.out.println("Beaten "+beaten);
+                    localPurgatory.addPiece(beaten);
+                }
+                board.clearSelecion(); 
                 return;
         }
 
@@ -206,15 +219,14 @@ class MyPanel extends JPanel
     {
         g.clearRect(0, 0, this.getWidth(), this.getHeight());        
         board.draw(g);
+        localPurgatory.draw(g);
+        netPurgatory.draw(g);
     }
 
     // sprawdza czy ktoś nie został nieoszlifowanym zwycięscą
     public void czyKoniecGry(Gameboard plansza){
     }
 
-    private Piece Point(int x, int y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     
 }
