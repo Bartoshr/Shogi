@@ -8,6 +8,8 @@ package main;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
 import static main.Gameboard.size;
 import pieces.*;
 
@@ -74,26 +76,6 @@ public class Purgatory {
         }
     }
     
-    @Override
-    public String toString() {
-        StringBuffer builder = new StringBuffer("<html>Rook : ");
-        builder.append(rook);
-        builder.append("<br>Bishop:");
-        builder.append(bishop);
-        builder.append("<br>SilverGeneral: ");
-        builder.append(silverGeneral);
-        builder.append("<br>GoldenGeneral: ");
-        builder.append(goldGeneral);
-        builder.append("<br>Lance: ");
-        builder.append(lance);
-        builder.append("<br>Pawn: ");
-        builder.append(pawn);
-        builder.append("<br>Knight: ");
-        builder.append(knight);
-        builder.append("<br></html>");
-        
-        return builder.toString();
-    }
     
     public void selectItem(int i){
         selected = i;
@@ -128,6 +110,33 @@ public class Purgatory {
         pieces[4].drawSign(g, rects[4], rook);
         pieces[5].drawSign(g, rects[5], lance);
         pieces[6].drawSign(g, rects[6], silverGeneral); 
+    }
+    
+    public List<Point> getPossibleMoves(Gameboard board){
+        List<Point> result = new ArrayList<>();
+            for(int i = 0; i<board.size; i++){
+                
+                if(pieces[selected] instanceof Pawn 
+                        && isPawnInColumn(i, board)) continue;
+                
+                for(int j=0; j<board.size; j++){                  
+                    Piece next = board.getField(i, j);
+                    if(next == null){
+                        result.add(new Point(i, j));
+                    }
+                }
+            }            
+            return result;
+    }
+    
+    
+    //sprawdza czy znajduje się promowany pionek
+    public boolean isPawnInColumn(int column, Gameboard board){
+        for(int i = 0; i<board.size; i++) {
+            Piece piece = board.getField(column, i);
+            if (piece instanceof Pawn && !piece.promoted) return true;
+        }
+        return false;
     }
     
     

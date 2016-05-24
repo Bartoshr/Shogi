@@ -14,8 +14,8 @@ import main.Gameboard;
 
 public abstract class Piece {
            
-    boolean promoted;
-    boolean promotable;
+    public boolean promoted;
+    public boolean promotable;
     
     private static final Font normalSignFont = new Font("Times New Roman", Font.BOLD, 35);
     private static final Font smallSignFont = new Font("Times New Roman", Font.BOLD, 30);
@@ -141,6 +141,6 @@ public abstract class Piece {
     public String toString() {
         return this.getClass().getSimpleName();
     }
-     
+    
      
 }

@@ -38,9 +38,16 @@ public class Rook extends Piece{
     
     @Override
     public boolean couldMove(Point from, Point to, Gameboard board) {
-        return super.couldMove(from, to, board) 
-                && ((to.x-from.x == 0) || (to.y-from.y == 0)) 
-                    && obstacleDetect(from, to, board);
+        if(!promoted) {
+            return super.couldMove(from, to, board) 
+                    && ((to.x-from.x == 0) || (to.y-from.y == 0)) 
+                        && obstacleDetect(from, to, board);
+        } else {
+            return super.couldMove(from, to, board) 
+                    && (((to.x-from.x == 0) || (to.y-from.y == 0)) 
+                        && obstacleDetect(from, to, board) 
+                            ||(Math.abs(to.x-from.x) <= 1 && Math.abs(to.y-from.y) <= 1));
+        }
     }
     
     

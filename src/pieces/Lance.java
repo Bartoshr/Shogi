@@ -35,9 +35,17 @@ public class Lance extends Piece{
 
     @Override
     public boolean couldMove(Point from, Point to, Gameboard board) {
-        return super.couldMove(from, to, board) 
-                && (from.x-to.x == 0) && (from.y-to.y>0)
-                    && obstacleDetect(from, to, board);
+        if(!promoted) {
+            return super.couldMove(from, to, board) 
+                   && (from.x-to.x == 0) && (from.y-to.y>0)
+                        && obstacleDetect(from, to, board);
+        } else {
+            int dx = to.x-from.x;
+            int dy = to.y-from.y;
+            return super.couldMove(from, to, board)
+                && (Math.abs(dx) <= 1 && Math.abs(dy) <= 1)
+                    && !(dx == -1 && dy == 1) && !(dx == 1 && dy == 1);
+        }
     }
     
     

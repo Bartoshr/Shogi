@@ -25,11 +25,19 @@ public class SilverGeneral extends Piece{
 
     @Override
     public boolean couldMove(Point from, Point to, Gameboard board) {
-        int dx = to.x-from.x;
-        int dy = to.y-from.y;
-        return super.couldMove(from, to, board)
-        && (Math.abs(dx) <= 1 && Math.abs(dy) <= 1)
-                && !(dx == -1 && dy == 0) && !(dx == 0 && dy == 1) && !(dx == 1 && dy == 0);
+        if(!promoted) {
+            int dx = to.x-from.x;
+            int dy = to.y-from.y;
+            return super.couldMove(from, to, board)
+            && (Math.abs(dx) <= 1 && Math.abs(dy) <= 1)
+                    && !(dx == -1 && dy == 0) && !(dx == 0 && dy == 1) && !(dx == 1 && dy == 0);
+        } else {
+            int dx = to.x-from.x;
+            int dy = to.y-from.y;
+            return super.couldMove(from, to, board)
+                && (Math.abs(dx) <= 1 && Math.abs(dy) <= 1)
+                    && !(dx == -1 && dy == 1) && !(dx == 1 && dy == 1);
+        }
     }
     
     

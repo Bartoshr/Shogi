@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import javax.swing.JPanel;
 import pieces.*;
@@ -187,14 +188,17 @@ class MyPanel extends JPanel
     {
         localPurgatory.clearSelection();
         board.clearSelecion();
+        board.clearPossibleMoves();
         
-        int purgitoryItem = localPurgatory.checkCoordinates(mouseX, mouseY);
-        if(purgitoryItem != -1) localPurgatory.selectItem(purgitoryItem);
-        
+        if(onPurgitoryClicked(mouseX, mouseY)) return;
+        onBoardClicked(mouseX, mouseY);
+    }
+    
+    // true - jeśli obsłuzone kliknięcie, false jeśli nie
+    public boolean onBoardClicked(int mouseX, int mouseY){
         Point next = board.checkCoordinates(mouseX, mouseY);   
-        if(next == null) return;
-           
-                      
+        if(next == null) return false;
+                            
        if (board.couldMove(current, next)){ 
                 System.out.println("Moved from "+current+" to "+next);
                 Piece beaten = board.movePiece(current, next);
@@ -203,11 +207,23 @@ class MyPanel extends JPanel
                     localPurgatory.addPiece(beaten);
                 }
                 board.clearSelecion(); 
-                return;
+                return true;
         }
 
         board.selectField(next.x, next.y);
         current = new Point(next.x, next.y);
+        return true;
+    }
+    
+    public boolean onPurgitoryClicked(int mouseX, int mouseY){
+        int purgitoryItem = localPurgatory.checkCoordinates(mouseX, mouseY);
+        if(purgitoryItem != -1) {
+            localPurgatory.selectItem(purgitoryItem);
+            List<Point> possibleMoves = localPurgatory.getPossibleMoves(board);
+            board.setPossibleMoves(possibleMoves);
+            return true;
+        }
+        return false;
     }
     
     void startButtonClicked(){

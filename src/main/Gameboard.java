@@ -8,6 +8,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
 
 
 
@@ -25,6 +27,8 @@ public class Gameboard {
     Piece[][] pieces= new Piece[9][9];
     Rectangle[][] fields=new Rectangle[9][9]; // tablica pól planszy
     Point selected;
+    
+    List<Point> possibleMoves;
         
     Gameboard(int x, int y){
         this.x = x;
@@ -83,7 +87,20 @@ public class Gameboard {
         Piece beaten = pieces[next.x][next.y];
         pieces[next.x][next.y] = pieces[current.x][current.y];
         pieces[current.x][current.y] = null;
+
+        promotionDetect(next);    
         return beaten;
+    }
+    
+    void promotionDetect(Point next){
+        Piece piece = pieces[next.x][next.y];  
+        if(next.y <= 2 && piece.promotable && !piece.promoted) {
+            int answer = JOptionPane.showConfirmDialog(null,
+                "Want promote ?", "Promotion", JOptionPane.YES_NO_OPTION);
+            if(answer == 0) {
+                pieces[next.x][next.y].promoted = true;
+            }
+        }
     }
        
     // ustawia konkretną wartość na polu o indeksach x,y
@@ -103,6 +120,22 @@ public class Gameboard {
         } else {
             selected = new Point(x,y);
         }
+        
+        // refresh possibleMoves array
+        Piece seletedPiece = getSelected();
+        if(seletedPiece != null) {
+            possibleMoves = seletedPiece.getPossibleMoves(x, y, this);
+        } else {
+            possibleMoves = null;
+        }
+    }
+    
+    public void setPossibleMoves(List<Point> possibleMoves){
+        this.possibleMoves = possibleMoves;
+    }
+    
+    public void clearPossibleMoves(){
+        possibleMoves = null;
     }
     
     public Piece getSelected(){
@@ -131,23 +164,16 @@ public class Gameboard {
                   Rectangle rect = fields[i][j];
                   g.drawRect(rect.x, rect.y, rect.height, rect.width);           
                   if(selected != null && selected.x == i && selected.y == j) {
-                         Rectangle rect2 = fields[Math.abs(i-8)][Math.abs(j-8)];
                          markField(g, rect, green);
-                         markField(g, rect2, green);
                   }
               }
           }
         
-        if(selected != null) {
-            Piece seletedPiece = getSelected();
-            if(seletedPiece != null) {
-                int selx = selected.x;
-                int sely = selected.y;
-                for(Point marked : seletedPiece.getPossibleMoves(selx, sely, this)){
-                    markField(g, fields[marked.x][marked.y], red);
-                }
-            }
-        }
+          if(possibleMoves != null) {
+            for(Point marked : possibleMoves){
+                markField(g, fields[marked.x][marked.y], red);
+               }
+          }
         
         // właściwe pola
         for(int i=0; i<size; i++) {
