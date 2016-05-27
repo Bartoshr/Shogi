@@ -76,6 +76,27 @@ public class Purgatory {
         }
     }
     
+    int getPieceCount(Piece piece){
+        if(piece == null) return -1;
+        
+        if(piece instanceof Rook) {
+            return rook;
+        } else if(piece instanceof Bishop) {
+            return bishop;
+        } else if(piece instanceof GoldGeneral) {
+            return goldGeneral;
+        } else if(piece instanceof SilverGeneral) {
+            return silverGeneral;
+        } else if(piece instanceof Lance) {
+            return lance;
+        } else if(piece instanceof Pawn) {
+            return pawn;
+        } else if(piece instanceof Knight) {
+            return knight;
+        }
+        return -1;
+    }
+    
     
     public void selectItem(int i){
         selected = i;
@@ -113,9 +134,11 @@ public class Purgatory {
     }
     
     public List<Point> getPossibleMoves(Gameboard board){
-        List<Point> result = new ArrayList<>();
+               
+        List<Point> result = new ArrayList<>();    
+            if(getPieceCount(pieces[selected]) == 0) return result;
+            
             for(int i = 0; i<board.size; i++){
-                
                 if(pieces[selected] instanceof Pawn 
                         && isPawnInColumn(i, board)) continue;
                 

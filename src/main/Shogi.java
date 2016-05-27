@@ -7,14 +7,30 @@ import main.Gameboard;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import static main.Shogi.connection;
 import pieces.*;
 
 public class Shogi extends javax.swing.JFrame {
 
+    static Connection connection = new Connection();
+    
+    public static String data = "Toobie ornaught toobie";
+    
+    
     public Shogi() {
         initComponents();
     }
@@ -27,8 +43,6 @@ public class Shogi extends javax.swing.JFrame {
         startButton = new javax.swing.JButton();
         label = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
-        menu = new javax.swing.JMenu();
-        resetItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -67,24 +81,12 @@ public class Shogi extends javax.swing.JFrame {
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
-                .addContainerGap(508, Short.MAX_VALUE)
+                .addContainerGap(529, Short.MAX_VALUE)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(startButton)
                     .addComponent(label))
                 .addContainerGap())
         );
-
-        menu.setText("Opcje");
-
-        resetItem.setText("Reset");
-        resetItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetItemActionPerformed(evt);
-            }
-        });
-        menu.add(resetItem);
-
-        menuBar.add(menu);
 
         setJMenuBar(menuBar);
 
@@ -108,6 +110,7 @@ public class Shogi extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
     private void panelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelMouseClicked
         // TODO add your handling code here:
         if(evt.getButton()==evt.BUTTON1) {
@@ -121,15 +124,18 @@ public class Shogi extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_panelMouseMoved
 
-    private void resetItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetItemActionPerformed
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_resetItemActionPerformed
-
     private void startButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_startButtonMouseClicked
         ((MyPanel)panel).startButtonClicked();
     }//GEN-LAST:event_startButtonMouseClicked
 
+    
+    
+    public static boolean chooseClientServer(){
+        String[] possibleValues = { "Client", "Server"};
+        String selectedValue = (String)JOptionPane.showInputDialog(null,"Choose", "Input",
+        JOptionPane.INFORMATION_MESSAGE, null, possibleValues, possibleValues[1]);
+        return (selectedValue.compareTo("Server") == 0);
+    }
     
     public static void setText(String napis){
         label.setText(napis);
@@ -137,20 +143,25 @@ public class Shogi extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) {  
+        
+        
+        connection.isServer = chooseClientServer();
+        new Thread(connection).start();
+
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Shogi().setVisible(true);
+                new Shogi().setVisible(true);                
             }
         });
+          
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private static javax.swing.JLabel label;
-    private javax.swing.JMenu menu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JPanel panel;
-    private javax.swing.JMenuItem resetItem;
     private javax.swing.JButton startButton;
     // End of variables declaration//GEN-END:variables
 }
@@ -227,7 +238,7 @@ class MyPanel extends JPanel
     }
     
     void startButtonClicked(){
-       
+       Shogi.connection.sendString("Hello");
     }
     
     @Override
