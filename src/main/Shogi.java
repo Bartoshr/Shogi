@@ -25,7 +25,7 @@ import pieces.*;
 
 public class Shogi extends javax.swing.JFrame implements Connection.OnDataReceived{
     
-    public static boolean myTurn;
+    public static boolean myTurn; // czy jest twoja kolej czy nie
     
     public Shogi() {
         initComponents();
