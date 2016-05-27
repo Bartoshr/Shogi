@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import sun.security.jca.GetInstance;
 
 /**
  *
@@ -23,6 +24,14 @@ public class Connection implements Runnable {
     
     public static boolean isServer;
     
+    interface OnDataReceived{
+        public void onDataReceived(String data);
+    }
+    
+    public OnDataReceived listener;
+    
+    private static Connection instance;
+    
        // TCP Components
     public static ServerSocket srvr;
     public static Socket socket;
@@ -31,7 +40,14 @@ public class Connection implements Runnable {
     
     public String data;
 
-    public Connection() {
+    private Connection() {
+    }
+    
+    public static Connection getInstance(){
+        if(instance == null) {
+            instance = new Connection();
+        }
+        return instance;
     }
     
     public void sendString(String data){
@@ -63,7 +79,11 @@ public class Connection implements Runnable {
         
         String s;
         init();
-        while(true){            
+        while(true){  
+            
+        try { // Poll every ~10 ms
+           Thread.sleep(10);
+         } catch (InterruptedException e) {}
             
             try {
                // Send data
@@ -76,7 +96,9 @@ public class Connection implements Runnable {
                // Receive data
                if(!in.ready()) continue;
                if ((s = in.readLine()) != null) {
-                    System.out.println(s);
+                   if(listener != null) {
+                       listener.onDataReceived(s);
+                   }
                }
             }
             catch (IOException ex) {

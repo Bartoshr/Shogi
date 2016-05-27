@@ -23,9 +23,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import pieces.*;
 
-public class Shogi extends javax.swing.JFrame {
-
-    static Connection connection = new Connection();
+public class Shogi extends javax.swing.JFrame implements Connection.OnDataReceived{
+    
+    public static boolean myTurn;
     
     public Shogi() {
         initComponents();
@@ -124,8 +124,12 @@ public class Shogi extends javax.swing.JFrame {
         ((MyPanel)panel).startButtonClicked();
     }//GEN-LAST:event_startButtonMouseClicked
 
-    
-    
+    public static void changeTurn(boolean turn){
+        myTurn = turn;
+        if(myTurn == true) setText("Your Turn");
+        else  setText("Wait for opponent");
+    }
+
     public static boolean chooseClientServer(){
         String[] possibleValues = { "Client", "Server"};
         String selectedValue = (String)JOptionPane.showInputDialog(null,"Choose", "Input",
@@ -141,14 +145,20 @@ public class Shogi extends javax.swing.JFrame {
      */
     public static void main(String args[]) {  
         
-        
-        connection.isServer = chooseClientServer();
+        Connection connection = Connection.getInstance();
+        connection.isServer = chooseClientServer();        
         new Thread(connection).start();
-
-
+        
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Shogi().setVisible(true);                
+                Shogi shogi = new Shogi();
+                shogi.setVisible(true);
+                
+                Connection connection = Connection.getInstance();
+                connection.listener = shogi;
+                
+                //Klient ma pierwszy ruch
+                changeTurn(!connection.isServer);
             }
         });
           
@@ -160,13 +170,18 @@ public class Shogi extends javax.swing.JFrame {
     private javax.swing.JPanel panel;
     private javax.swing.JButton startButton;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void onDataReceived(String data) {
+        System.out.println("Change Turn, data =  "+data);
+        changeTurn(true);
+    }
 }
 class MyPanel extends JPanel
 {    
     Point current = null; 
     Piece cpiece = null;
     
-    boolean graRozpoczeta = false;
     
     Player localPlayer;
     Player netPlayer;
@@ -193,6 +208,8 @@ class MyPanel extends JPanel
     // Game Mechanics in mouseClicked
     void mouseClicked(int mouseX, int mouseY)
     {
+        if(Shogi.myTurn == false) return;
+        
         localPurgatory.clearSelection();
         board.clearSelecion();
         board.clearPossibleMoves();
@@ -205,7 +222,8 @@ class MyPanel extends JPanel
     public boolean onBoardClicked(int mouseX, int mouseY){
         Point next = board.checkCoordinates(mouseX, mouseY);   
         if(next == null) return false;
-                            
+                   
+       // gdy wykoanano ruch 
        if (board.couldMove(current, next)){ 
                 System.out.println("Moved from "+current+" to "+next);
                 Piece beaten = board.movePiece(current, next);
@@ -213,10 +231,13 @@ class MyPanel extends JPanel
                     System.out.println("Beaten "+beaten);
                     localPurgatory.addPiece(beaten);
                 }
-                board.clearSelecion(); 
+                board.clearSelecion();
+                Shogi.changeTurn(false);
+                Connection.getInstance().sendString("Hello");
                 return true;
         }
 
+        // gdy zaznaczono jakieś pole 
         board.selectField(next.x, next.y);
         current = new Point(next.x, next.y);
         return true;
@@ -233,8 +254,7 @@ class MyPanel extends JPanel
         return false;
     }
     
-    void startButtonClicked(){
-       Shogi.connection.sendString("Hello");
+    void startButtonClicked(){  
     }
     
     @Override
