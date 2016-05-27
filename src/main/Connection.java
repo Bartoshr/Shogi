@@ -37,48 +37,16 @@ public class Connection implements Runnable {
     public void sendString(String data){
         this.data = data;
     }
-    
-    public void connected(String s){
-        try {
-               // Send data
-               if (data != null) {
-                  out.print(data);
-                  out.flush();
-                  data = null;
-               }
-
-               // Receive data
-               if (in.ready()) {
-                  s = in.readLine();
-                  if ((s != null) &&  (s.length() != 0)) {
-                        JOptionPane.showMessageDialog(null, s);
-                  }
-               }
-            }
-            catch (IOException e) {
-            }
-    }
-    
-    public void close(){
-        try {
-            if(isServer) {
-                socket.close();
-                srvr.close();
-            } else {
-                
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
+        
     public void init(){
         try {
             if(isServer) {
                 srvr = new ServerSocket(1234);
                 socket = srvr.accept();
+                System.out.println("Server connected");
             } else {
                 socket = new Socket("localhost", 1234);
+                System.out.println("Client connected");
             }
             
             in = new BufferedReader(new 
@@ -93,15 +61,28 @@ public class Connection implements Runnable {
     @Override
     public void run() {
         
-        String s = null;
-        
+        String s;
         init();
-        while(true){
+        while(true){            
             
             try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {}
-            connected(s);
+               // Send data
+               if (data != null) {
+                  out.println(data);
+                  out.flush();
+                  data = null;
+               }
+
+               // Receive data
+               if(!in.ready()) continue;
+               if ((s = in.readLine()) != null) {
+                    System.out.println(s);
+               }
+            }
+            catch (IOException ex) {
+                Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
 
     }

@@ -21,15 +21,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import static main.Shogi.connection;
 import pieces.*;
 
 public class Shogi extends javax.swing.JFrame {
 
     static Connection connection = new Connection();
-    
-    public static String data = "Toobie ornaught toobie";
-    
     
     public Shogi() {
         initComponents();
