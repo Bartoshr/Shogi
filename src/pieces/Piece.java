@@ -12,7 +12,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import main.Gameboard;
 
-public abstract class Piece {
+public abstract class Piece{
            
     public boolean promoted;
     public boolean promotable;
@@ -140,7 +140,6 @@ public abstract class Piece {
     @Override
     public String toString() {
         return this.getClass().getSimpleName();
-    }
-    
+    }    
      
 }

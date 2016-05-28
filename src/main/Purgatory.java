@@ -10,6 +10,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static main.Gameboard.size;
 import pieces.*;
 
@@ -76,6 +78,26 @@ public class Purgatory {
         }
     }
     
+    void removePiece(Piece piece){
+        if(piece == null) return;
+        
+        if(piece instanceof Rook) {
+            rook--;
+        } else if(piece instanceof Bishop) {
+            bishop--;
+        } else if(piece instanceof GoldGeneral) {
+            goldGeneral--;
+        } else if(piece instanceof SilverGeneral) {
+            silverGeneral--;
+        } else if(piece instanceof Lance) {
+            lance--;
+        } else if(piece instanceof Pawn) {
+            pawn--;
+        } else if(piece instanceof Knight) {
+            knight--;
+        }
+    }
+    
     int getPieceCount(Piece piece){
         if(piece == null) return -1;
         
@@ -133,6 +155,27 @@ public class Purgatory {
         pieces[6].drawSign(g, rects[6], silverGeneral); 
     }
     
+    public Piece getPiece(int select, Player player){
+        Piece piece = pieces[select];
+        
+        if(piece instanceof Rook) {
+            return new Rook(player);
+        } else if(piece instanceof Bishop) {
+            return new Bishop(player);
+        } else if(piece instanceof GoldGeneral) {
+            return new GoldGeneral(player);
+        } else if(piece instanceof SilverGeneral) {
+            return new SilverGeneral(player);
+        } else if(piece instanceof Lance) {
+            return new Lance(player);
+        } else if(piece instanceof Pawn) {
+            return new Pawn(player);
+        } else if(piece instanceof Knight) {
+            return new Knight(player);
+        }
+        return null;
+    }
+    
     public List<Point> getPossibleMoves(Gameboard board){
                
         List<Point> result = new ArrayList<>();    
@@ -150,6 +193,12 @@ public class Purgatory {
                 }
             }            
             return result;
+    }
+    
+    public boolean couldMove(Point next, Gameboard board){
+        List<Point> possibleMoves = this.getPossibleMoves(board);
+        if(possibleMoves.isEmpty()) return false;
+        return possibleMoves.contains(next);
     }
     
     

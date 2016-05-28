@@ -2,23 +2,9 @@ package main;
 
 
 
-import main.Player;
-import main.Gameboard;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.Rectangle;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import pieces.*;
@@ -191,7 +177,7 @@ class MyPanel extends JPanel
         
     Gameboard board;
     
-    int purgitoryItem = -1;
+    int lastPurgitoryItem = -1;
     
     MyPanel()
     {
@@ -225,9 +211,18 @@ class MyPanel extends JPanel
         Point next = board.checkCoordinates(mouseX, mouseY);   
         if(next == null) return false;
         
-        if(purgitoryItem != -1) {
-            System.out.println("Coś tam");
+        // gdy dodano element z "czyśca"
+        if(lastPurgitoryItem != -1) {
+            localPurgatory.selectItem(lastPurgitoryItem);
+            if(localPurgatory.couldMove(next, board)) {
+                addPieceFromPurgitory(next);
+                localPurgatory.clearSelection();
+                Shogi.changeTurn(false);
+                return true;
+            }
+            localPurgatory.clearSelection();
         }
+        lastPurgitoryItem = -1;
                    
        // gdy wykoanano ruch 
        if (board.couldMove(current, next)){ 
@@ -254,18 +249,39 @@ class MyPanel extends JPanel
         return true;
     }
     
+    public void addPieceFromPurgitory(Point next){
+        Piece piece = localPurgatory.getPiece(lastPurgitoryItem, localPlayer);
+        board.setField(next.x, next.y, piece);
+        localPurgatory.removePiece(piece);
+        
+        Move move = new Move(next, next, false, lastPurgitoryItem);
+        Connection.getInstance().sendString(move.toString());
+    }
+    
     public boolean onPurgitoryClicked(int mouseX, int mouseY){
-        purgitoryItem = localPurgatory.checkCoordinates(mouseX, mouseY);
+        int purgitoryItem = localPurgatory.checkCoordinates(mouseX, mouseY);
         if(purgitoryItem != -1) {
             localPurgatory.selectItem(purgitoryItem);
             List<Point> possibleMoves = localPurgatory.getPossibleMoves(board);
             board.setPossibleMoves(possibleMoves);
+            lastPurgitoryItem = purgitoryItem;
             return true;
         }
         return false;
     }
     
     public void onOponentMove(Move move) {
+        
+        // gdy figura została dodana z "czyśca"
+        if(move.pieceType != 9) {
+            Point to = board.mirror(move.to);
+            Piece piece = localPurgatory.getPiece(move.pieceType, netPlayer);
+            board.setField(to.x, to.y, piece);
+            netPurgatory.removePiece(piece);
+            return;
+        }
+        
+        
         Point from = board.mirror(move.from);
         Point to = board.mirror(move.to);
         
