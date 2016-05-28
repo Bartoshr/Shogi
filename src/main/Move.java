@@ -23,7 +23,27 @@ public class Move implements Serializable {
         this.to = to;
         this.withPromotion = withPromotion;
     }
+
     
+    public Move(String string) {
+       from = new Point((int)string.charAt(0)-48, (int)string.charAt(1)-48);
+       to = new Point((int)string.charAt(2)-48, (int)string.charAt(3)-48);
+       withPromotion = ((int)(string.charAt(4)-48) == 1);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("");
+        builder.append(from.x);
+        builder.append(from.y);
+        builder.append(to.x);
+        builder.append(to.y);
+        
+        if(withPromotion) builder.append(1);
+                else builder.append(0);
+        
+        return builder.toString();
+    }
     
     
 }

@@ -25,7 +25,7 @@ public class Connection implements Runnable {
     public static boolean isServer;
     
     interface OnDataReceived{
-        public void onDataReceived(String data);
+        public void onDataReceived(Move data);
     }
     
     public OnDataReceived listener;
@@ -97,7 +97,7 @@ public class Connection implements Runnable {
                if(!in.ready()) continue;
                if ((s = in.readLine()) != null) {
                    if(listener != null) {
-                       listener.onDataReceived(s);
+                       listener.onDataReceived(new Move(s));
                    }
                }
             }

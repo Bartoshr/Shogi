@@ -94,7 +94,8 @@ public class Gameboard {
     
     void promotionDetect(Point next){
         Piece piece = pieces[next.x][next.y];  
-        if(next.y <= 2 && piece.promotable && !piece.promoted) {
+        if(next.y <= 2 && piece.promotable 
+                && !piece.promoted && !piece.owner.isUp) {
             int answer = JOptionPane.showConfirmDialog(null,
                 "Want promote ?", "Promotion", JOptionPane.YES_NO_OPTION);
             if(answer == 0) {

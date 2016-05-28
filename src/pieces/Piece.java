@@ -24,7 +24,7 @@ public abstract class Piece {
     String normChar = ""; 
     String promChar = "";
     
-    Player owner;
+    public Player owner;
     
     private static final Color background = new Color(212, 195, 144);
     

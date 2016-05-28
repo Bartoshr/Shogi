@@ -48,8 +48,14 @@ public class Player {
         for(int i = 0; i < 9; i++){
             board.setField(i, firstRow, new Pawn(this));
         }
-        board.setField(1,midRow, new Bishop(this));
-        board.setField(7,midRow, new Rook(this));
+        
+        if(!isUp){
+            board.setField(1,midRow, new Bishop(this));
+            board.setField(7,midRow, new Rook(this));
+        } else {
+            board.setField(7,midRow, new Bishop(this));
+            board.setField(1,midRow, new Rook(this));
+        }
         
         board.setField(0,lastRow, new Lance(this));
         board.setField(1,lastRow, new Knight(this));

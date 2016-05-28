@@ -172,8 +172,8 @@ public class Shogi extends javax.swing.JFrame implements Connection.OnDataReceiv
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void onDataReceived(String data) {
-        System.out.println("Change Turn, data =  "+data);
+    public void onDataReceived(Move data) {
+        ((MyPanel)panel).onOponentMove(data);
         changeTurn(true);
     }
 }
@@ -190,6 +190,8 @@ class MyPanel extends JPanel
     Purgatory netPurgatory;
         
     Gameboard board;
+    
+    int purgitoryItem = -1;
     
     MyPanel()
     {
@@ -222,18 +224,27 @@ class MyPanel extends JPanel
     public boolean onBoardClicked(int mouseX, int mouseY){
         Point next = board.checkCoordinates(mouseX, mouseY);   
         if(next == null) return false;
+        
+        if(purgitoryItem != -1) {
+            System.out.println("Coś tam");
+        }
                    
        // gdy wykoanano ruch 
        if (board.couldMove(current, next)){ 
                 System.out.println("Moved from "+current+" to "+next);
+                
+                Piece moved = board.getField(current.x, current.y);
                 Piece beaten = board.movePiece(current, next);
+                                
+                Move move = new Move(current, next, moved.promoted);
+                Connection.getInstance().sendString(move.toString());
+                
                 if(beaten != null) {
                     System.out.println("Beaten "+beaten);
                     localPurgatory.addPiece(beaten);
                 }
                 board.clearSelecion();
                 Shogi.changeTurn(false);
-                Connection.getInstance().sendString("Hello");
                 return true;
         }
 
@@ -244,7 +255,7 @@ class MyPanel extends JPanel
     }
     
     public boolean onPurgitoryClicked(int mouseX, int mouseY){
-        int purgitoryItem = localPurgatory.checkCoordinates(mouseX, mouseY);
+        purgitoryItem = localPurgatory.checkCoordinates(mouseX, mouseY);
         if(purgitoryItem != -1) {
             localPurgatory.selectItem(purgitoryItem);
             List<Point> possibleMoves = localPurgatory.getPossibleMoves(board);
@@ -252,6 +263,21 @@ class MyPanel extends JPanel
             return true;
         }
         return false;
+    }
+    
+    public void onOponentMove(Move move) {
+        Point from = board.mirror(move.from);
+        Point to = board.mirror(move.to);
+        
+        Piece moved = board.getField(from.x, from.y);
+        moved.promoted = move.withPromotion;
+        
+        Piece beaten = board.movePiece(from, to);
+        
+        if(beaten != null) {
+            System.out.println("Beaten "+beaten);
+            netPurgatory.addPiece(beaten);
+        }
     }
     
     void startButtonClicked(){  
