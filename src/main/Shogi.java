@@ -235,6 +235,7 @@ class MyPanel extends JPanel
                 Connection.getInstance().sendString(move.toString());
                 
                 if(beaten != null) {
+                    endGame(beaten);
                     System.out.println("Beaten "+beaten);
                     localPurgatory.addPiece(beaten);
                 }
@@ -291,6 +292,7 @@ class MyPanel extends JPanel
         Piece beaten = board.movePiece(from, to);
         
         if(beaten != null) {
+            endGame(beaten);
             System.out.println("Beaten "+beaten);
             netPurgatory.addPiece(beaten);
         }
@@ -309,9 +311,15 @@ class MyPanel extends JPanel
     }
 
     // sprawdza czy ktoś nie został nieoszlifowanym zwycięscą
-    public void czyKoniecGry(Gameboard plansza){
-    }
-
-
+    public void endGame(Piece beaten){
+        if(beaten instanceof King && beaten.owner == localPlayer) {
+            JOptionPane.showMessageDialog(this, "You lost");
+            Shogi.changeTurn(false);
+        } else if(beaten instanceof King && beaten.owner == netPlayer) {
+            JOptionPane.showMessageDialog(this, "You won");
+             Shogi.changeTurn(false);
+        }
+    } 
+        
     
 }
