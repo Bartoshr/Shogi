@@ -160,7 +160,7 @@ public class Shogi extends javax.swing.JFrame implements Connection.OnDataReceiv
     @Override
     public void onDataReceived(Move data) {
         ((MyPanel)panel).onOponentMove(data);
-        changeTurn(true);
+//        changeTurn(true);
     }
 }
 class MyPanel extends JPanel
@@ -292,10 +292,12 @@ class MyPanel extends JPanel
         Piece beaten = board.movePiece(from, to);
         
         if(beaten != null) {
-            endGame(beaten);
+            if(endGame(beaten)) return;
             System.out.println("Beaten "+beaten);
             netPurgatory.addPiece(beaten);
         }
+        
+        Shogi.changeTurn(true);
     }
     
     void startButtonClicked(){  
@@ -311,14 +313,17 @@ class MyPanel extends JPanel
     }
 
     // sprawdza czy ktoś nie został nieoszlifowanym zwycięscą
-    public void endGame(Piece beaten){
+    public boolean endGame(Piece beaten){
         if(beaten instanceof King && beaten.owner == localPlayer) {
             JOptionPane.showMessageDialog(this, "You lost");
             Shogi.changeTurn(false);
+            return true;
         } else if(beaten instanceof King && beaten.owner == netPlayer) {
             JOptionPane.showMessageDialog(this, "You won");
              Shogi.changeTurn(false);
+             return true;
         }
+        return false;
     } 
         
     
